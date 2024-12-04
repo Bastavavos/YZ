@@ -3,36 +3,52 @@
 {% block title %}Post{% endblock %}
 
 {% block body %}
-    <h1>Post</h1>
+    <h1>{{ post.author.username }}</h1>
 
     <table class="table">
         <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ post.id }}</td>
-            </tr>
             <tr>
                 <th>Content</th>
                 <td>{{ post.content }}</td>
             </tr>
             <tr>
-                <th>Created_at</th>
+                <th>Date</th>
                 <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
                 <th>Picture</th>
-                <td>{{ post.picture }}</td>
+                <td>
+                    {% if post.picture %}
+                        <img src="/uploads/posts/{{ post.picture }}" alt="image"
+                             class="img-fluid w-25 rounded flex mx-auto d-block"/>
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Tags</th>
                 <td>{{ post.tags }}</td>
             </tr>
+            <tr>
+                <th>Comments</th>
+                <td>
+                    {% for comment in post.getChildren %}
+                        <div class="comment">
+                            <p>{{ comment.content}}</p>
+                            <p><strong>{{ comment.author.username }}</strong></p>
+                            <p><em>{{ comment.createdAt ? comment.createdAt|date('Y-m-d H:i') : '' }}</em></p>
+                        </div>
+                    {% else %}
+                        <p>No comments yet.</p>
+                    {% endfor %}
+                </td>
+            </tr>
         </tbody>
     </table>
 
-    <a href="{{ path('app_post_index') }}">back to list</a>
-    <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
-    <a href="{{ path('app_post_new') }}">comment</a>
-
+    <a class="btn btn-dark" href="{{ path('app_post_index') }}">back</a>
+    <a class="btn btn-dark" href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+    <a class="btn btn-dark" href="{{ path('app_post_new', {'parent': post.id}) }}">comment</a>
+    <br>
+    <br>
     {{ include('post/_delete_form.html.twig') }}
 {% endblock %}

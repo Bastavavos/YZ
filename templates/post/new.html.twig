@@ -3,9 +3,14 @@
 {% block title %}New Post{% endblock %}
 
 {% block body %}
-    <h1>Create new Post</h1>
 
+    {% if post.getParent is null %}
+    <h1>New Post</h1>
     {{ include('post/_form.html.twig') }}
-
-    <a href="{{ path('app_post_index') }}">back to list</a>
+    <a class="btn btn-dark" href="{{ path('app_post_index') }}">back</a>
+    {% else %}
+        <h1>Comment</h1>
+        {{ include('post/_form.html.twig') }}
+        <a class="btn btn-dark" href="{{ path('app_post_index') }}">back</a>
+    {% endif %}
 {% endblock %}

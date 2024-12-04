@@ -15,11 +15,22 @@ use Symfony\Component\Routing\Attribute\Route;
 final class PostController extends AbstractController
 {
     #[Route(name: 'app_post_index', methods: ['GET'])]
-    public function index(PostRepository $postRepository): Response
+    public function index(Request $request, PostRepository $postRepository): Response
     {
+        $search = $request->query->get('search');
+        if ($search) {
+            $posts = $postRepository->findBySearch($search);
+        } else {
+            $posts = $postRepository->findPosts();
+        }
+
         return $this->render('post/index.html.twig', [
-            'posts' => $postRepository->findAll(),
+            'posts' => $posts,
         ]);
+
+//        return $this->render('post/index.html.twig', [
+//            'posts' => $postRepository->findPosts(),
+//        ]);
     }
 
     #[Route('/new', name: 'app_post_new', methods: ['GET', 'POST'])]
@@ -31,11 +42,27 @@ final class PostController extends AbstractController
             return $this->json(['error' => 'Vous devez être connecté pour créer un post.'], Response::HTTP_UNAUTHORIZED);
         }
 
+        $parentId = $request->query->get('parent'); // On récupère l'ID du parent
         $post = new Post();
+
+        if ($parentId) {
+            $parentPost = $entityManager->getRepository(Post::class)->find($parentId);
+            if ($parentPost) {
+                $post->setParent($parentPost); // définis le parent
+            }
+        }
+
         $form = $this->createForm(PostType::class, $post);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $file = $form->get('picture')->getData();
+            if ($file) {
+                $filename = $post->getId() . '.' . $file->getClientOriginalExtension();
+                $file->move($this->getParameter('kernel.project_dir') . '/public/uploads/posts', $filename);
+                $post->setPicture($filename);
+            }
+
             $post->setAuthor($user);
             $entityManager->persist($post);
             $entityManager->flush();

@@ -1,44 +1,49 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Post index{% endblock %}
+{% block title %}YZ{% endblock %}
 
 {% block body %}
-    <h1>Z</h1>
-    <a href="{{ path('app_register') }}">Sign up</a>
-    <a href="{{ path('app_login') }}">Sign in</a>
-    <a href="{{ path('app_logout') }}">Logout</a>
+    <h1 class="text-center">YZ</h1>
+        <form method="get" action="{{ path('app_post_index') }}">
+            <div class="input-group">
+                <label>
+                    <input type="text" class="form-control" name="search" value="{{ app.request.query.get('search') }}" placeholder="Search by username or tags" />
+                </label>
+                <button class="btn btn-outline-dark" type="submit">Search</button>
+            </div>
+        </form>
+    <br>
+    <a class="btn btn-dark flex" href="{{ path('app_post_new') }}">New post</a>
     <br>
     <br>
-
     <table class="table">
         <thead>
-            <tr>
-                <th>content</th>
-                <th>pic</th>
-                <th>tags</th>
-                <th>author</th>
-                <th>comment</th>
-                <th>date</th>
-                <th>actions</th>
-            </tr>
+        <tr>
+            <th>content</th>
+            <th>pic</th>
+            <th>tags</th>
+            <th>author</th>
+            <th>date</th>
+            <th>actions</th>
+        </tr>
         </thead>
         <tbody>
         {% for post in posts %}
             <tr>
                 <td>{{ post.content }}</td>
                 <td>
-                    <img src="{{ post.picture }}" alt="image"/>
+                    {% if post.picture %}
+                        <img src="/uploads/posts/{{ post.picture }}" alt="image"
+                             class="img-fluid w-25 rounded flex mx-auto d-block"/>
+                    {% endif %}
                 </td>
                 <td>{{ post.tags }}</td>
                 <td>{{ post.author.username }}</td>
-
-                <td>{{ post.getComment() }}</td>
-
                 <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i') : '' }}</td>
                 <td>
-                        <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
-                        <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
-                        <a href="{{ path('app_post_new', {'id': post.id}) }}">comment</a>
+                    <a class="btn btn-outline-dark" href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
+                    <a class="btn btn-outline-dark" href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                    <a class="btn btn-outline-dark" href="{{ path('app_post_new', {'parent': post.id}) }}">comment</a>
                 </td>
             </tr>
         {% else %}
@@ -48,6 +53,4 @@
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_post_new') }}">Create new</a>
 {% endblock %}

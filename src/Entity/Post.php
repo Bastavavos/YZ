@@ -33,19 +33,19 @@ class Post
 
     private ?User $author = null;
 
-    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'comments')]
-    private ?self $comment = null;
+    #[ORM\ManyToOne(targetEntity: self::class, inversedBy: 'children')]
+    private ?self $parent = null;
 
     /**
      * @var Collection<int, self>
      */
-    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'comment')]
-    private Collection $comments;
+    #[ORM\OneToMany(targetEntity: self::class, mappedBy: 'parent')]
+    private Collection $children;
 
     public function __construct()
     {
         $this->created_at = new \DateTimeImmutable();
-        $this->comments = new ArrayCollection();
+        $this->children = new ArrayCollection();
     }
     public function getId(): ?int
     {
@@ -112,14 +112,14 @@ class Post
         return $this;
     }
 
-    public function getComment(): ?self
+    public function getParent(): ?self
     {
-        return $this->comment;
+        return $this->parent;
     }
 
-    public function setComment(?self $comment): static
+    public function setParent(?self $post): static
     {
-        $this->comment = $comment;
+        $this->parent = $post;
 
         return $this;
     }
@@ -127,27 +127,27 @@ class Post
     /**
      * @return Collection<int, self>
      */
-    public function getComments(): Collection
+    public function getChildren(): Collection
     {
-        return $this->comments;
+        return $this->children;
     }
 
-    public function addComment(self $comment): static
+    public function addChild(self $post): static
     {
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-            $comment->setComment($this);
+        if (!$this->children->contains($post)) {
+            $this->children->add($post);
+            $post->setParent($this);
         }
 
         return $this;
     }
 
-    public function removeComment(self $comment): static
+    public function removeChild(self $post): static
     {
-        if ($this->comments->removeElement($comment)) {
+        if ($this->children->removeElement($post)) {
             // set the owning side to null (unless already changed)
-            if ($comment->getComment() === $this) {
-                $comment->setComment(null);
+            if ($post->getParent() === $this) {
+                $post->setParent(null);
             }
         }
 
