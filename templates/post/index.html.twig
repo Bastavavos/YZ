@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Post index{% endblock %}
+
+{% block body %}
+    <h1>Z</h1>
+    <a href="{{ path('app_register') }}">Sign up</a>
+    <a href="{{ path('app_login') }}">Sign in</a>
+    <a href="{{ path('app_logout') }}">Logout</a>
+    <br>
+    <br>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>content</th>
+                <th>pic</th>
+                <th>tags</th>
+                <th>author</th>
+                <th>comment</th>
+                <th>date</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for post in posts %}
+            <tr>
+                <td>{{ post.content }}</td>
+                <td>
+                    <img src="{{ post.picture }}" alt="image"/>
+                </td>
+                <td>{{ post.tags }}</td>
+                <td>{{ post.author.username }}</td>
+
+                <td>{{ post.getComment() }}</td>
+
+                <td>{{ post.createdAt ? post.createdAt|date('Y-m-d H:i') : '' }}</td>
+                <td>
+                        <a href="{{ path('app_post_show', {'id': post.id}) }}">show</a>
+                        <a href="{{ path('app_post_edit', {'id': post.id}) }}">edit</a>
+                        <a href="{{ path('app_post_new', {'id': post.id}) }}">comment</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="6">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_post_new') }}">Create new</a>
+{% endblock %}
