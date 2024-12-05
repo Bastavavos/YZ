@@ -28,7 +28,7 @@ final class PostController extends AbstractController
             'posts' => $posts,
         ]);
 
-//        return $this->render('post/index.html.twig', [
+//        return $this->render('post/dashboard.html.twig', [
 //            'posts' => $postRepository->findPosts(),
 //        ]);
     }
@@ -58,7 +58,7 @@ final class PostController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $file = $form->get('picture')->getData();
             if ($file) {
-                $filename = $post->getId() . '.' . $file->getClientOriginalExtension();
+                $filename = $post->getId() . '.' . $file->getClientOriginalName(); // getClientOriginalExtension();
                 $file->move($this->getParameter('kernel.project_dir') . '/public/uploads/posts', $filename);
                 $post->setPicture($filename);
             }

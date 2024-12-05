@@ -36,6 +36,7 @@
                             <p>{{ comment.content}}</p>
                             <p><strong>{{ comment.author.username }}</strong></p>
                             <p><em>{{ comment.createdAt ? comment.createdAt|date('Y-m-d H:i') : '' }}</em></p>
+                            <a class="btn btn-dark" href="{{ path('app_post_new', {'parent': post.id}) }}">reply</a>
                         </div>
                     {% else %}
                         <p>No comments yet.</p>
